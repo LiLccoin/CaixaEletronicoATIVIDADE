@@ -7,7 +7,29 @@ class Program
     {
         double saldo = 2050.0;
         double limiteSaque = 500.0;
+        double limiteTransferencia = 1000.0;
+        string senha = "123456"; 
+        string cpf = "99737244629";
+        double taxaTransferencia = 0.0005;
         int opcao;
+
+        Console.Write("Digite seu CPF: ");
+        string cpfdigitado = Console.ReadLine();
+
+        if (cpfdigitado != cpf )
+        {
+            Console.WriteLine("CPF incorreto.");
+            return;
+        }
+
+        Console.Write("Digite sua senha (6 dígitos): ");
+        string senhaDigitada = Console.ReadLine();
+
+        if (senhaDigitada != senha)
+        {
+            Console.WriteLine("Senha incorreta. Acesso negado.");
+            return; 
+        }
 
         using (StreamWriter extrato = new StreamWriter("extrato.txt", true))
         {
@@ -19,7 +41,9 @@ class Program
                 Console.WriteLine("3. Depositar");
                 Console.WriteLine("4. Extrato");
                 Console.WriteLine("5. Transferir");
-                Console.WriteLine("6. Sair");
+                Console.WriteLine("6. Aplicar em Poupança");
+                Console.WriteLine("7. Aplicar em CDB");
+                Console.WriteLine("8. Sair");
                 Console.Write("Escolha uma opção: ");
                 opcao = int.Parse(Console.ReadLine());
 
@@ -72,19 +96,55 @@ class Program
                     case 5:
                         Console.Write("Digite o valor da transferência: R$ ");
                         double valorTransferencia = double.Parse(Console.ReadLine());
-                        if (valorTransferencia > saldo)
+                        double taxa = valorTransferencia * taxaTransferencia;
+
+                        if (valorTransferencia > limiteTransferencia)
+                        {
+                            Console.WriteLine($"O valor máximo de transferência é: R$ {limiteTransferencia}");
+                        }
+                        else if (valorTransferencia + taxa > saldo)
                         {
                             Console.WriteLine("Saldo insuficiente para transferência.");
                         }
                         else
                         {
-                            saldo -= valorTransferencia;
-                            Console.WriteLine($"Transferência de R$ {valorTransferencia} realizada com sucesso!");
-                            extrato.WriteLine($"Transferência de R$ {valorTransferencia} realizada");
+                            saldo -= (valorTransferencia + taxa);
+                            Console.WriteLine($"Transferência de R$ {valorTransferencia} realizada com sucesso! Taxa: R$ {taxa}");
+                            extrato.WriteLine($"Transferência de R$ {valorTransferencia} realizada com taxa de R$ {taxa}");
                         }
                         break;
 
                     case 6:
+                        Console.Write("Digite o valor para aplicar em Poupança: R$ ");
+                        double valorPoupanca = double.Parse(Console.ReadLine());
+                        if (valorPoupanca > saldo)
+                        {
+                            Console.WriteLine("Saldo insuficiente para aplicação.");
+                        }
+                        else
+                        {
+                            saldo -= valorPoupanca;
+                            Console.WriteLine($"Aplicação de R$ {valorPoupanca} em Poupança realizada com sucesso!");
+                            extrato.WriteLine($"Aplicação de R$ {valorPoupanca} em Poupança realizada");
+                        }
+                        break;
+
+                    case 7:
+                        Console.Write("Digite o valor para aplicar em CDB: R$ ");
+                        double valorCDB = double.Parse(Console.ReadLine());
+                        if (valorCDB > saldo)
+                        {
+                            Console.WriteLine("Saldo insuficiente para aplicação.");
+                        }
+                        else
+                        {
+                            saldo -= valorCDB;
+                            Console.WriteLine($"Aplicação de R$ {valorCDB} em CDB realizada com sucesso!");
+                            extrato.WriteLine($"Aplicação de R$ {valorCDB} em CDB realizada");
+                        }
+                        break;
+
+                    case 8:
                         Console.WriteLine("Obrigado por usar o Caixa Eletrônico!");
                         break;
 
@@ -94,7 +154,7 @@ class Program
                 }
 
                 Console.WriteLine();
-            } while (opcao != 6);
+            } while (opcao != 8);
         }
     }
 }
